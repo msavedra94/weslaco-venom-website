@@ -302,6 +302,9 @@ td{font-size:13px}
 const SUPABASE_URL =
   'https://szekcsktehivlooxkzdi.supabase.co';
 
+window.VENOM_SUPABASE_KEY =
+  'sb_publishable_THnA7C6l6BITM49xBfZrtQ_NU9sA3M8';
+
 const login = document.getElementById('login');
 const dashboard = document.getElementById('dashboard');
 const loginMessage = document.getElementById('loginMessage');
@@ -580,7 +583,6 @@ function renderPlayers() {
 function csvCell(value) {
   let text = String(value ?? '');
 
-  // Prevent spreadsheet formula injection.
   if (/^[\s]*[=+\-@]/.test(text)) {
     text = "'" + text;
   }
@@ -683,3 +685,4 @@ showLogin();
 </script>
 </body>
 </html>
+
