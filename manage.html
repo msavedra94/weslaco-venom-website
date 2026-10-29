@@ -1,7 +1,171 @@
-<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Manage Reservation | Weslaco Venom</title><style>body{background:#09050e;color:#fff;font:16px system-ui;margin:0}main{max-width:580px;margin:60px auto;padding:24px;background:#1a0b29;border:1px solid #ae4de1;border-radius:16px}button{padding:13px;background:#8e22cf;border:0;color:white;border-radius:8px;font-weight:700;margin:8px;cursor:pointer}button.cancel{background:#5b284f}a{color:#e3aaff}</style><main><a href="/">← Venom home</a><h1>MANAGE YOUR SPOT</h1><div id="info">Loading your registration…</div><div id="actions" hidden><button id="unsub">Stop payment reminder emails</button><button class="cancel" id="cancel">Cancel reservation and release spot</button></div><p id="message" role="status"></p><p>Unsubscribing does not cancel your spot. An unpaid spot is automatically released 14 days after reservation.</p></main><script>
-const q=new URLSearchParams(location.search),info=document.querySelector('#info'),actions=document.querySelector('#actions'),message=document.querySelector('#message');
-const args={id:q.get('id'),token:q.get('token')};
-async function load(){try{const r=await fetch('/.netlify/functions/manage?'+new URLSearchParams(args));const d=await r.json();if(!r.ok)throw Error(d.error);info.textContent=`Player: ${d.player_name} • Status: ${d.status} • Reservation deadline: ${new Date(d.expires_at).toLocaleString()}. ${d.reminders_disabled?'Reminders disabled.':''}`;actions.hidden=d.status!=='reserved';document.querySelector('#unsub').disabled=d.reminders_disabled}catch(e){info.textContent=e.message}};
-async function act(action){if(action==='cancel'&&!confirm('Cancel this reservation and release the player spot?'))return;const r=await fetch('/.netlify/functions/manage',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({...args,action})});const d=await r.json();message.textContent=d.message||d.error;load()}
-document.querySelector('#unsub').onclick=()=>act('unsubscribe');document.querySelector('#cancel').onclick=()=>act('cancel');load();
-</script></html>
+
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Manage Reservation | Weslaco Venom</title>
+<style>
+body{
+  background:#09050e;
+  color:#fff;
+  font:16px system-ui;
+  margin:0;
+}
+main{
+  max-width:580px;
+  margin:60px auto;
+  padding:24px;
+  background:#1a0b29;
+  border:1px solid #ae4de1;
+  border-radius:16px;
+}
+button{
+  padding:13px;
+  background:#8e22cf;
+  border:0;
+  color:white;
+  border-radius:8px;
+  font-weight:700;
+  margin:8px;
+  cursor:pointer;
+}
+button.cancel{background:#5b284f}
+button:disabled{opacity:.5;cursor:not-allowed}
+a{color:#e3aaff}
+</style>
+</head>
+<body>
+
+<main>
+<a href="/">← Venom home</a>
+
+<h1>MANAGE YOUR SPOT</h1>
+
+<div id="info">Loading your registration…</div>
+
+<div id="actions" hidden>
+  <button id="unsub">
+    Stop payment reminder emails
+  </button>
+
+  <button class="cancel" id="cancel">
+    Cancel reservation and release spot
+  </button>
+</div>
+
+<p id="message" role="status"></p>
+
+<p>
+  Your spot is reserved while pricing is TBD.
+  Once pricing is officially announced, you
+  will have 14 days to complete payment.
+  Unsubscribing from reminders does not
+  cancel your reservation.
+</p>
+</main>
+
+<script>
+const q=new URLSearchParams(location.search);
+
+const info=document.querySelector('#info');
+const actions=document.querySelector('#actions');
+const message=document.querySelector('#message');
+
+const args={
+  id:q.get('id'),
+  token:q.get('token')
+};
+
+async function load(){
+  try{
+    const r=await fetch(
+      '/.netlify/functions/manage?'+
+      new URLSearchParams(args)
+    );
+
+    const d=await r.json();
+
+    if(!r.ok){
+      throw Error(d.error||'Unable to load reservation.');
+    }
+
+    let deadline='Not started — pricing is TBD';
+
+    if(d.expires_at){
+      const date=new Date(d.expires_at);
+
+      if(!Number.isNaN(date.getTime())){
+        deadline=date.toLocaleString('en-US');
+      }
+    }
+
+    info.textContent=
+      `Player: ${d.player_name} • `+
+      `Status: ${d.status} • `+
+      `Payment deadline: ${deadline}. `+
+      (d.reminders_disabled
+        ? 'Reminders disabled.'
+        : '');
+
+    actions.hidden=d.status!=='reserved';
+
+    document.querySelector('#unsub').disabled=
+      Boolean(d.reminders_disabled);
+
+  }catch(e){
+    info.textContent=e.message;
+    actions.hidden=true;
+  }
+}
+
+async function act(action){
+  if(
+    action==='cancel' &&
+    !confirm(
+      'Cancel this reservation and release the player spot?'
+    )
+  ){
+    return;
+  }
+
+  try{
+    const r=await fetch(
+      '/.netlify/functions/manage',
+      {
+        method:'POST',
+        headers:{
+          'content-type':'application/json'
+        },
+        body:JSON.stringify({
+          ...args,
+          action
+        })
+      }
+    );
+
+    const d=await r.json();
+
+    message.textContent=
+      d.message||d.error||'Request completed.';
+
+    await load();
+
+  }catch(e){
+    message.textContent=
+      'Unable to complete request. Please try again.';
+  }
+}
+
+document.querySelector('#unsub').onclick=
+  ()=>act('unsubscribe');
+
+document.querySelector('#cancel').onclick=
+  ()=>act('cancel');
+
+load();
+</script>
+
+</body>
+</html>
+
