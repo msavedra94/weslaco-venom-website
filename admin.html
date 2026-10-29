@@ -1,0 +1,685 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Venom Admin | Weslaco Venom</title>
+<style>
+:root{
+  --bg:#09050e;
+  --panel:#1b1028;
+  --panel2:#271637;
+  --purple:#a32be4;
+  --silver:#d9d2e2;
+  --muted:#b5a6c4;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--bg);
+  color:white;
+  font:15px system-ui,-apple-system,sans-serif;
+}
+header{
+  background:#14091f;
+  border-bottom:1px solid #67308c;
+  padding:22px 18px;
+}
+.wrap{max-width:1150px;margin:auto}
+.brand{
+  font-size:28px;
+  font-weight:1000;
+  font-style:italic;
+  letter-spacing:2px;
+  color:var(--silver);
+  text-shadow:2px 2px var(--purple);
+}
+.subtitle{
+  color:var(--muted);
+  font-size:12px;
+  letter-spacing:2px;
+}
+main{padding:25px 15px}
+.card{
+  background:var(--panel);
+  border:1px solid #65318c;
+  border-radius:15px;
+  padding:20px;
+  margin-bottom:18px;
+}
+h1,h2,h3{margin-top:0}
+h1{font-size:24px}
+h2{font-size:18px}
+label{
+  display:block;
+  color:var(--muted);
+  margin:12px 0 5px;
+}
+input,select{
+  width:100%;
+  background:#100b19;
+  color:white;
+  border:1px solid #78509a;
+  border-radius:8px;
+  padding:13px;
+  font:inherit;
+}
+button{
+  background:var(--purple);
+  color:white;
+  border:0;
+  border-radius:8px;
+  padding:12px 16px;
+  font-weight:800;
+  cursor:pointer;
+}
+button.secondary{background:#433052}
+button:disabled{opacity:.5}
+button:hover{filter:brightness(1.12)}
+.hidden{display:none!important}
+.muted{color:var(--muted)}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+}
+.metric{
+  background:var(--panel2);
+  padding:18px;
+  border-radius:12px;
+}
+.metric small{color:var(--muted)}
+.metric strong{
+  display:block;
+  font-size:29px;
+  margin-top:8px;
+}
+.toolbar{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-bottom:15px;
+}
+.toolbar>*{flex:1;min-width:140px}
+.tablewrap{overflow-x:auto}
+table{
+  border-collapse:collapse;
+  width:100%;
+  min-width:760px;
+}
+th,td{
+  text-align:left;
+  padding:13px 10px;
+  border-bottom:1px solid #49345d;
+}
+th{color:#d7b5ef;font-size:12px}
+td{font-size:13px}
+.status{
+  padding:5px 9px;
+  border-radius:20px;
+  background:#443052;
+  font-size:12px;
+  font-weight:700;
+}
+.status.paid{background:#175d42}
+.status.reserved{background:#604114}
+.status.expired,.status.cancelled{background:#632d43}
+.division{
+  background:var(--panel2);
+  border-radius:10px;
+  padding:13px;
+  margin:9px 0;
+}
+.divisiontop{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+}
+.bar{
+  height:8px;
+  background:#483454;
+  border-radius:10px;
+  margin-top:10px;
+  overflow:hidden;
+}
+.fill{
+  height:100%;
+  background:var(--purple);
+}
+#login{max-width:440px;margin:45px auto}
+#notice{color:#e5b5ff;min-height:20px}
+.toprow{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+}
+@media(min-width:750px){
+  .grid{grid-template-columns:repeat(4,1fr)}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap toprow">
+    <div>
+      <div class="brand">VENOM</div>
+      <div class="subtitle">WESLACO • PRESIDENT ADMIN</div>
+    </div>
+    <button id="logout" class="secondary hidden">
+      Log out
+    </button>
+  </div>
+</header>
+
+<main class="wrap">
+
+<section id="login" class="card">
+  <h1>PRIVATE ADMIN LOGIN</h1>
+  <p class="muted">
+    Authorized Weslaco Venom administrators only.
+  </p>
+
+  <form id="loginForm">
+    <label for="email">Email address</label>
+    <input
+      id="email"
+      type="email"
+      autocomplete="username"
+      required
+    >
+
+    <label for="password">Password</label>
+    <input
+      id="password"
+      type="password"
+      autocomplete="current-password"
+      required
+    >
+
+    <button id="loginButton" type="submit"
+      style="margin-top:18px;width:100%">
+      Secure Login
+    </button>
+  </form>
+
+  <p id="loginMessage" role="status"></p>
+</section>
+
+<section id="dashboard" class="hidden">
+
+  <div class="toprow">
+    <div>
+      <h1>VENOM ADMIN DASHBOARD</h1>
+      <p class="muted">
+        Private player registration management
+      </p>
+    </div>
+    <button id="refresh" class="secondary">
+      Refresh
+    </button>
+  </div>
+
+  <p id="notice" role="status"></p>
+
+  <div class="grid">
+    <div class="metric">
+      <small>Active registrations</small>
+      <strong id="registered">0</strong>
+    </div>
+    <div class="metric">
+      <small>Available spots</small>
+      <strong id="available">0</strong>
+    </div>
+    <div class="metric">
+      <small>Paid players</small>
+      <strong id="paid">0</strong>
+    </div>
+    <div class="metric">
+      <small>Pending payment</small>
+      <strong id="pending">0</strong>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px">
+    <div class="toprow">
+      <h2>DIVISION CAPACITY</h2>
+      <span class="muted" id="capacitySummary"></span>
+    </div>
+    <div id="divisions"></div>
+  </div>
+
+  <div class="card">
+    <div class="toprow">
+      <h2>PLAYER REGISTRATIONS</h2>
+      <button id="exportAll">Export to Excel (CSV)</button>
+    </div>
+
+    <div class="toolbar">
+      <input id="search"
+        placeholder="Search player or parent">
+
+      <select id="divisionFilter">
+        <option value="">All divisions</option>
+      </select>
+
+      <select id="statusFilter">
+        <option value="">All statuses</option>
+        <option value="reserved">Reserved</option>
+        <option value="paid">Paid</option>
+        <option value="cancelled">Cancelled</option>
+        <option value="expired">Expired</option>
+      </select>
+    </div>
+
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Player</th>
+            <th>Division</th>
+            <th>Birthday</th>
+            <th>Parent / Guardian</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Status</th>
+            <th>Registered</th>
+            <th>Payment deadline</th>
+          </tr>
+        </thead>
+        <tbody id="players"></tbody>
+      </table>
+    </div>
+  </div>
+
+</section>
+</main>
+
+<script>
+const SUPABASE_URL =
+  'https://szekcsktehivlooxkzdi.supabase.co';
+
+const login = document.getElementById('login');
+const dashboard = document.getElementById('dashboard');
+const loginMessage = document.getElementById('loginMessage');
+const notice = document.getElementById('notice');
+const logoutButton = document.getElementById('logout');
+
+let accessToken = null;
+let refreshToken = null;
+let divisionData = [];
+
+function showLogin(message = '') {
+  accessToken = null;
+  refreshToken = null;
+  divisionData = [];
+  dashboard.classList.add('hidden');
+  login.classList.remove('hidden');
+  logoutButton.classList.add('hidden');
+  loginMessage.textContent = message;
+  document.getElementById('password').value = '';
+}
+
+function showDashboard() {
+  login.classList.add('hidden');
+  dashboard.classList.remove('hidden');
+  logoutButton.classList.remove('hidden');
+}
+
+async function authenticate(email, password) {
+  const response = await fetch(
+    SUPABASE_URL + '/auth/v1/token?grant_type=password',
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        apikey: window.VENOM_SUPABASE_KEY
+      },
+      body: JSON.stringify({
+        email,
+        password
+      })
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok || !data.access_token) {
+    throw new Error(
+      'Unable to log in. Check your email and password.'
+    );
+  }
+
+  accessToken = data.access_token;
+  refreshToken = data.refresh_token;
+}
+
+async function loadDashboard() {
+  notice.textContent = 'Loading registrations...';
+
+  const response = await fetch(
+    '/.netlify/functions/admin',
+    {
+      headers: {
+        Authorization: 'Bearer ' + accessToken
+      },
+      cache: 'no-store'
+    }
+  );
+
+  const data = await response.json();
+
+  if (response.status === 401) {
+    showLogin('Session expired. Please log in again.');
+    return;
+  }
+
+  if (response.status === 403) {
+    showLogin('This account is not authorized.');
+    return;
+  }
+
+  if (!response.ok) {
+    throw new Error(
+      data.error || 'Unable to load registrations.'
+    );
+  }
+
+  divisionData = data.divisions || [];
+
+  renderDashboard();
+  showDashboard();
+  notice.textContent = 'Registration data updated.';
+}
+
+function active(r) {
+  if (r.status === 'paid') return true;
+  if (r.status !== 'reserved') return false;
+  return !r.expires_at ||
+    new Date(r.expires_at).getTime() > Date.now();
+}
+
+function allPlayers() {
+  return divisionData.flatMap(d =>
+    (d.players || []).map(p => ({
+      ...p,
+      division_name: d.name
+    }))
+  );
+}
+
+function formatDate(value) {
+  if (!value) return 'Not started';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '—';
+  return date.toLocaleDateString('en-US');
+}
+
+function renderDashboard() {
+  const players = allPlayers();
+  const activePlayers = players.filter(active);
+
+  document.getElementById('registered').textContent =
+    activePlayers.length;
+
+  document.getElementById('available').textContent =
+    divisionData.reduce((sum,d) =>
+      sum + d.available, 0);
+
+  document.getElementById('paid').textContent =
+    players.filter(p => p.status === 'paid').length;
+
+  document.getElementById('pending').textContent =
+    activePlayers.filter(p =>
+      p.status === 'reserved').length;
+
+  const capacity = divisionData.reduce(
+    (sum,d) => sum + d.capacity, 0
+  );
+
+  document.getElementById('capacitySummary').textContent =
+    activePlayers.length + ' / ' + capacity + ' spots';
+
+  const divisionsElement =
+    document.getElementById('divisions');
+
+  divisionsElement.replaceChildren();
+
+  for (const d of divisionData) {
+    const container = document.createElement('div');
+    container.className = 'division';
+
+    const top = document.createElement('div');
+    top.className = 'divisiontop';
+
+    const name = document.createElement('strong');
+    name.textContent = d.name;
+
+    const count = document.createElement('span');
+    count.textContent =
+      d.occupied + ' / ' + d.capacity;
+
+    top.append(name,count);
+
+    const bar = document.createElement('div');
+    bar.className = 'bar';
+
+    const fill = document.createElement('div');
+    fill.className = 'fill';
+    fill.style.width =
+      Math.min(100,
+        d.capacity
+          ? (d.occupied / d.capacity) * 100
+          : 0
+      ) + '%';
+
+    bar.append(fill);
+    container.append(top,bar);
+    divisionsElement.append(container);
+  }
+
+  const filter = document.getElementById('divisionFilter');
+  const previous = filter.value;
+
+  filter.replaceChildren(
+    new Option('All divisions','')
+  );
+
+  for (const d of divisionData) {
+    filter.add(new Option(d.name,d.id));
+  }
+
+  filter.value = previous;
+  renderPlayers();
+}
+
+function filteredPlayers() {
+  const term =
+    document.getElementById('search')
+      .value.toLowerCase().trim();
+
+  const division =
+    document.getElementById('divisionFilter').value;
+
+  const status =
+    document.getElementById('statusFilter').value;
+
+  return allPlayers().filter(p => {
+    const matchesTerm =
+      (
+        p.player_name + ' ' +
+        p.guardian_name + ' ' +
+        p.guardian_email
+      ).toLowerCase().includes(term);
+
+    const matchesDivision =
+      !division || p.division_id === division;
+
+    const matchesStatus =
+      !status || p.status === status;
+
+    return matchesTerm &&
+      matchesDivision &&
+      matchesStatus;
+  });
+}
+
+function renderPlayers() {
+  const body = document.getElementById('players');
+  body.replaceChildren();
+
+  const players = filteredPlayers();
+
+  if (!players.length) {
+    const row = document.createElement('tr');
+    const cell = document.createElement('td');
+    cell.colSpan = 9;
+    cell.textContent = 'No matching registrations.';
+    row.append(cell);
+    body.append(row);
+    return;
+  }
+
+  for (const p of players) {
+    const row = document.createElement('tr');
+
+    const values = [
+      p.player_name,
+      p.division_name,
+      p.player_birthdate,
+      p.guardian_name,
+      p.guardian_email,
+      p.guardian_phone,
+      p.status,
+      formatDate(p.created_at),
+      formatDate(p.expires_at)
+    ];
+
+    for (let i = 0; i < values.length; i++) {
+      const cell = document.createElement('td');
+
+      if (i === 6) {
+        const badge = document.createElement('span');
+        badge.className = 'status ' + p.status;
+        badge.textContent = p.status;
+        cell.append(badge);
+      } else {
+        cell.textContent = values[i] || '—';
+      }
+
+      row.append(cell);
+    }
+
+    body.append(row);
+  }
+}
+
+function csvCell(value) {
+  let text = String(value ?? '');
+
+  // Prevent spreadsheet formula injection.
+  if (/^[\s]*[=+\-@]/.test(text)) {
+    text = "'" + text;
+  }
+
+  return '"' + text.replace(/"/g,'""') + '"';
+}
+
+function exportCSV() {
+  const headers = [
+    'Player',
+    'Division',
+    'Birthday',
+    'Parent / Guardian',
+    'Email',
+    'Phone',
+    'Status',
+    'Registered',
+    'Payment Deadline'
+  ];
+
+  const rows = filteredPlayers().map(p => [
+    p.player_name,
+    p.division_name,
+    p.player_birthdate,
+    p.guardian_name,
+    p.guardian_email,
+    p.guardian_phone,
+    p.status,
+    formatDate(p.created_at),
+    formatDate(p.expires_at)
+  ]);
+
+  const csv = [headers,...rows]
+    .map(row => row.map(csvCell).join(','))
+    .join('\r\n');
+
+  const blob = new Blob(
+    [csv],
+    {type:'text/csv;charset=utf-8'}
+  );
+
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'venom-registrations.csv';
+  link.click();
+
+  setTimeout(() => URL.revokeObjectURL(url),1000);
+}
+
+document.getElementById('loginForm')
+  .addEventListener('submit',async event => {
+    event.preventDefault();
+
+    const button = document.getElementById('loginButton');
+    button.disabled = true;
+    loginMessage.textContent = 'Signing in...';
+
+    try {
+      await authenticate(
+        document.getElementById('email').value.trim(),
+        document.getElementById('password').value
+      );
+
+      await loadDashboard();
+
+    } catch (error) {
+      showLogin(error.message);
+    } finally {
+      button.disabled = false;
+    }
+  });
+
+document.getElementById('refresh').onclick =
+  async () => {
+    try {
+      await loadDashboard();
+    } catch(error) {
+      notice.textContent = error.message;
+    }
+  };
+
+document.getElementById('search').oninput =
+  renderPlayers;
+
+document.getElementById('divisionFilter').onchange =
+  renderPlayers;
+
+document.getElementById('statusFilter').onchange =
+  renderPlayers;
+
+document.getElementById('exportAll').onclick =
+  exportCSV;
+
+logoutButton.onclick = () => {
+  showLogin('You have logged out.');
+};
+
+showLogin();
+</script>
+</body>
+</html>
