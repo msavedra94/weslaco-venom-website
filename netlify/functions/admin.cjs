@@ -25,7 +25,7 @@ exports.handler = async (event) => {
       return reply(401, { error: 'Unauthorized' });
     }
 
-    // Validate the user's login with Supabase.
+    // Verify the login with Supabase.
     const userResponse = await fetch(
       `${SUPABASE_URL}/auth/v1/user`,
       {
@@ -48,7 +48,8 @@ exports.handler = async (event) => {
       return reply(401, { error: 'Unauthorized' });
     }
 
-    // Verify that this user is an authorized Venom admin.
+    // Verify the account has admin privileges.
+    // The database must enforce access to this table.
     const admins = await db('venom_admins', {
       query:
         '?select=user_id' +
@@ -63,7 +64,7 @@ exports.handler = async (event) => {
       });
     }
 
-    // Fetch divisions and registration records.
+    // Retrieve divisions.
     const divisions = await db('venom_divisions', {
       query:
         '?select=id,name,capacity,active,' +
@@ -71,13 +72,16 @@ exports.handler = async (event) => {
         '&order=name.asc'
     });
 
+    // Retrieve registrations and payment details.
     const reservations = await db('venom_reservations', {
       query:
         '?select=id,division_id,player_name,' +
         'player_birthdate,guardian_name,' +
         'guardian_email,guardian_phone,' +
         'status,created_at,expires_at,' +
-        'payment_window_started_at' +
+        'payment_window_started_at,' +
+        'paid_at,payment_method,' +
+        'payment_confirmed_by,payment_notes' +
         '&order=created_at.desc' +
         '&limit=1000'
     });
@@ -87,25 +91,41 @@ exports.handler = async (event) => {
       'paid'
     ]);
 
+    const now = Date.now();
+
     const result = divisions.map((division) => {
-      const players = reservations.filter(
-        (r) => r.division_id === division.id
-      );
+      const players = reservations
+        .filter((r) => r.division_id === division.id)
+        .map((r) => {
+          const deadline = r.expires_at
+            ? new Date(r.expires_at).getTime()
+            : null;
 
-      const occupied = players.filter((r) => {
-        if (!activeStatuses.has(r.status)) {
-          return false;
-        }
+          let payment_status = 'Inactive';
 
-        if (r.status === 'paid') {
-          return true;
-        }
+          if (r.status === 'paid') {
+            payment_status = 'Paid';
+          } else if (r.status === 'reserved') {
+            payment_status =
+              deadline !== null &&
+              Number.isFinite(deadline) &&
+              deadline <= now
+                ? 'Overdue'
+                : 'Pending';
+          }
 
-        return (
-          !r.expires_at ||
-          new Date(r.expires_at).getTime() > Date.now()
-        );
-      }).length;
+          return {
+            ...r,
+            payment_status
+          };
+        });
+
+      // Reserved players keep their spots even
+      // after the payment deadline.
+      // Only cancellation releases a spot.
+      const occupied = players.filter((r) =>
+        activeStatuses.has(r.status)
+      ).length;
 
       return {
         ...division,
@@ -135,3 +155,4 @@ exports.handler = async (event) => {
     });
   }
 };
+
