@@ -4,66 +4,106 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+
 <title>Reserve Your Spot | Weslaco Venom</title>
+
 <style>
 :root {
   --purple:#b84cff;
   --silver:#f2eafa;
 }
-* { box-sizing:border-box; }
+
+* {
+  box-sizing:border-box;
+}
+
 body {
   margin:0;
-  background:radial-gradient(ellipse at top,#421060,#09050e 70%);
+  background:radial-gradient(
+    ellipse at top,
+    #421060,
+    #09050e 70%
+  );
   color:white;
   font:16px system-ui,Arial,sans-serif;
   min-height:100vh;
 }
+
 main {
   max-width:650px;
   margin:auto;
   padding:26px 18px 70px;
 }
-a { color:#e9b8ff; }
+
+a {
+  color:#e9b8ff;
+}
+
 h1,h2 {
   font-family:Impact,"Arial Black",sans-serif;
   font-style:italic;
   text-transform:uppercase;
 }
+
 h1 {
   font-size:clamp(36px,9vw,58px);
   line-height:1;
-  text-shadow:3px 4px #741ca8,0 0 18px #a22bff66;
+  text-shadow:
+    3px 4px #741ca8,
+    0 0 18px #a22bff66;
 }
-h2 { font-size:25px; margin:0 0 14px; }
-p { line-height:1.55;color:#e1d2e9; }
+
+h2 {
+  font-size:25px;
+  margin:0 0 14px;
+}
+
+p {
+  line-height:1.55;
+  color:#e1d2e9;
+}
+
 .panel {
-  background:linear-gradient(145deg,#210d35,#100719);
+  background:linear-gradient(
+    145deg,
+    #210d35,
+    #100719
+  );
   border:1px solid #ae4de1;
   border-radius:18px;
   padding:24px;
   box-shadow:0 0 25px #942ce72c;
 }
+
 .banner {
   margin:24px 0;
   padding:22px;
   border:2px solid #b84cff;
   border-radius:14px;
-  background:linear-gradient(130deg,#321047,#12071e);
+  background:linear-gradient(
+    130deg,
+    #321047,
+    #12071e
+  );
   box-shadow:0 0 22px #a22bff44;
 }
+
 .banner h2 {
   color:white;
   text-shadow:2px 3px #8426bc;
 }
+
 .fee {
   padding:15px 0;
   border-top:1px solid #75419c;
 }
+
 .amount {
   font-size:28px;
   font-weight:900;
   color:#e8b4ff;
 }
+
 .tag {
   display:inline-block;
   padding:6px 11px;
@@ -73,11 +113,13 @@ p { line-height:1.55;color:#e1d2e9; }
   letter-spacing:1px;
   margin-bottom:10px;
 }
+
 label {
   display:block;
   font-weight:700;
   margin:15px 0 5px;
 }
+
 input,select {
   width:100%;
   padding:13px;
@@ -87,97 +129,218 @@ input,select {
   color:white;
   font:inherit;
 }
+
 button {
   width:100%;
   padding:15px;
   margin-top:22px;
   border:0;
   border-radius:8px;
-  background:linear-gradient(110deg,#bb3bff,#7913c9);
+  background:linear-gradient(
+    110deg,
+    #bb3bff,
+    #7913c9
+  );
   font-weight:900;
   color:white;
   font-size:17px;
   cursor:pointer;
 }
-button:disabled { opacity:.5;cursor:not-allowed; }
+
+button:disabled {
+  opacity:.5;
+  cursor:not-allowed;
+}
+
 .note {
   background:#28113d;
   padding:14px;
   border-radius:9px;
 }
-.small { font-size:13px; }
-#message { margin-top:16px;font-weight:700; }
+
+.small {
+  font-size:13px;
+}
+
+#message {
+  margin-top:16px;
+  font-weight:700;
+}
 </style>
 </head>
+
 <body>
 <main>
+
 <a href="/">← Back to Weslaco Venom</a>
 
 <h1>RESERVE YOUR SPOT</h1>
 
 <div class="banner">
-  <span class="tag">WINTER • NOW REGISTERING</span>
+
+  <span class="tag">
+    WINTER • NOW REGISTERING
+  </span>
+
   <h2>FEEL THE VENOM</h2>
-  <p><strong>BOYS FOOTBALL</strong><br>
-  6U 9v9 • 8U 7v7 • 10U 7v7 • 12U 7v7</p>
-  <p><strong>GIRLS 5v5</strong><br>
-  8U • 10U</p>
-  <p><strong>VALLEY BIGS — BIG MAN CHALLENGE</strong><br>
-  8U • 10U • 12U</p>
+
+  <p>
+    <strong>BOYS FOOTBALL</strong><br>
+    6U 9v9 • 8U 7v7 • 10U 7v7 • 12U 7v7
+  </p>
+
+  <p>
+    <strong>GIRLS 5v5</strong><br>
+    8U • 10U
+  </p>
+
+  <p>
+    <strong>VALLEY BIGS — BIG MAN CHALLENGE</strong><br>
+    8U • 10U • 12U
+  </p>
+
 </div>
 
 <div class="banner">
+
   <h2>REGISTRATION & PAYMENT INFORMATION</h2>
 
   <div class="fee">
     <div class="amount">$50 TEXASPORTS</div>
     <strong>Registration Fee</strong>
-    <p>Paid directly to Texasports. The payment link will be announced.</p>
+
+    <p>
+      Paid directly to Texasports.
+      The payment link will be announced.
+    </p>
   </div>
 
   <div class="fee">
     <div class="amount">$50 VENOM</div>
     <strong>Uniform Fee</strong>
-    <p>Paid directly to Weslaco Venom.</p>
-    <p><strong>Accepted payments:</strong> Zelle or cash in person.</p>
+
+    <p>
+      Paid directly to Weslaco Venom.
+    </p>
+
+    <p>
+      <strong>Accepted payments:</strong>
+      Zelle or cash in person.
+    </p>
   </div>
 
-  <p class="small">No payment is collected through this reservation form. Submit your information below to request an available spot.</p>
+  <p class="small">
+    No payment is collected through this
+    reservation form. Submit your information
+    below to reserve an available spot.
+  </p>
+
 </div>
 
 <div class="panel">
+
 <form id="f">
-  <label for="divisions">Program and division</label>
-  <select name="division_id" id="divisions" required>
-    <option value="">Loading available divisions…</option>
+
+  <label for="divisions">
+    Program and division
+  </label>
+
+  <select
+    name="division_id"
+    id="divisions"
+    required
+  >
+    <option value="">
+      Loading available divisions…
+    </option>
   </select>
 
-  <label for="guardian_name">Parent / guardian full name</label>
-  <input id="guardian_name" name="guardian_name" autocomplete="name" maxlength="120" required>
+  <label for="guardian_name">
+    Parent / guardian full name
+  </label>
 
-  <label for="guardian_email">Parent email</label>
-  <input id="guardian_email" name="guardian_email" type="email" autocomplete="email" required>
+  <input
+    id="guardian_name"
+    name="guardian_name"
+    autocomplete="name"
+    maxlength="120"
+    required
+  >
 
-  <label for="guardian_phone">Parent phone (optional)</label>
-  <input id="guardian_phone" name="guardian_phone" type="tel">
+  <label for="guardian_email">
+    Parent email
+  </label>
 
-  <label for="player_name">Player full name</label>
-  <input id="player_name" name="player_name" maxlength="120" required>
+  <input
+    id="guardian_email"
+    name="guardian_email"
+    type="email"
+    autocomplete="email"
+    required
+  >
 
-  <label for="player_birthdate">Player date of birth</label>
-  <input id="player_birthdate" name="player_birthdate" type="date" required>
+  <label for="guardian_phone">
+    Parent phone (optional)
+  </label>
+
+  <input
+    id="guardian_phone"
+    name="guardian_phone"
+    type="tel"
+  >
+
+  <label for="player_name">
+    Player full name
+  </label>
+
+  <input
+    id="player_name"
+    name="player_name"
+    maxlength="120"
+    required
+  >
+
+  <label for="player_birthdate">
+    Player date of birth
+  </label>
+
+  <input
+    id="player_birthdate"
+    name="player_birthdate"
+    type="date"
+    required
+  >
 
   <p class="note small">
-    Submitting this form reserves one available spot, subject to confirmation.
-    The $50 Texasports registration fee is paid directly to Texasports.
-    The $50 Venom uniform fee is paid through Zelle or cash in person.
+    Submitting this form reserves one available
+    spot, subject to availability.
+
+    The $50 Texasports registration fee is paid
+    directly to Texasports.
+
+    The $50 Venom uniform fee is paid through
+    Zelle or cash in person.
+
     Payment is not collected on this page.
   </p>
 
-  <button id="submit" type="submit" disabled>RESERVE MY SPOT</button>
-  <div id="message" role="status" aria-live="polite"></div>
+  <button
+    id="submit"
+    type="submit"
+    disabled
+  >
+    RESERVE MY SPOT
+  </button>
+
+  <div
+    id="message"
+    role="status"
+    aria-live="polite"
+  ></div>
+
 </form>
 </div>
+
 </main>
 
 <script>
@@ -188,37 +351,57 @@ const message = document.querySelector('#message');
 fetch('/.netlify/functions/divisions')
   .then(async response => {
     if (!response.ok) {
-      throw Error('Registration is not configured yet');
+      throw Error('Registration is temporarily unavailable');
     }
+
     return response.json();
   })
   .then(items => {
     select.innerHTML = '';
 
-    items.filter(item => Number(item.remaining) > 0)
-      .forEach(item => {
-        const option = document.createElement('option');
-        option.value = item.id;
-        option.textContent = `${item.season} • ${item.name}`;
-        select.append(option);
-      });
+    const available = items.filter(
+      item => Number(item.remaining) > 0
+    );
 
-    if (!select.options.length) {
+    if (!available.length) {
       select.innerHTML =
         '<option value="">No open divisions at this time</option>';
+      button.disabled = true;
+      return;
     }
 
-    button.disabled = !select.options.length || !select.value;
+    const placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = 'Select your program and division';
+    placeholder.disabled = true;
+    placeholder.selected = true;
+    select.append(placeholder);
+
+    available.forEach(item => {
+      const option = document.createElement('option');
+
+      option.value = item.id;
+
+      // Display division without price labels.
+      option.textContent =
+        `${item.season} • ${item.name}`;
+
+      select.append(option);
+    });
+
+    button.disabled = false;
   })
   .catch(error => {
     select.innerHTML =
       '<option value="">Registration opening soon</option>';
+
     message.textContent = error.message;
     button.disabled = true;
   });
 
 document.querySelector('#f').onsubmit = async event => {
   event.preventDefault();
+
   button.disabled = true;
   message.textContent = 'Saving your reservation…';
 
@@ -227,28 +410,39 @@ document.querySelector('#f').onsubmit = async event => {
       new FormData(event.target)
     );
 
-    const response = await fetch('/.netlify/functions/reserve', {
-      method:'POST',
-      headers:{'content-type':'application/json'},
-      body:JSON.stringify(data)
-    });
+    const response = await fetch(
+      '/.netlify/functions/reserve',
+      {
+        method:'POST',
+        headers:{
+          'content-type':'application/json'
+        },
+        body:JSON.stringify(data)
+      }
+    );
 
     const result = await response.json();
 
     if (!response.ok) {
-      throw Error(result.error || 'Unable to reserve');
+      throw Error(
+        result.error || 'Unable to reserve'
+      );
     }
 
     message.textContent =
-      result.message || 'Your reservation was submitted successfully.';
+      result.message ||
+      'Your reservation was submitted successfully.';
 
     event.target.reset();
+
   } catch (error) {
     message.textContent = error.message;
+
   } finally {
     button.disabled = false;
   }
 };
 </script>
+
 </body>
 </html>
