@@ -8,8 +8,9 @@ exports.config = {
 
 exports.handler = async () => {
   const now = new Date();
+  const adminEmail = process.env.ADMIN_EMAIL;
 
-  let expired = 0;
+  let overdue = 0;
   let reminded = 0;
   let failed = 0;
 
@@ -24,95 +25,71 @@ exports.handler = async () => {
         '&limit=1000'
     });
 
+    const overduePlayers = [];
+
     for (const r of all) {
       try {
-        // Pricing TBD: no countdown, reminders, or expiration.
-        if (
-          !r.payment_window_started_at ||
-          !r.expires_at
-        ) {
+        if (!r.payment_window_started_at || !r.expires_at) {
           continue;
         }
 
         const deadline = Date.parse(r.expires_at);
-        const started = Date.parse(
-          r.payment_window_started_at
-        );
+        const started = Date.parse(r.payment_window_started_at);
 
-        if (
-          !Number.isFinite(deadline) ||
-          !Number.isFinite(started)
-        ) {
+        if (!Number.isFinite(deadline) ||
+            !Number.isFinite(started)) {
           failed++;
-          console.error(
-            'Invalid payment dates for reservation',
-            r.id
-          );
           continue;
         }
 
-        // Release unpaid spots after the deadline.
+        // Overdue is a notification status only.
+        // NEVER automatically expire or cancel a player.
         if (deadline <= now.getTime()) {
-          await db('venom_reservations', {
-            method: 'PATCH',
-            query:
-              `?id=eq.${r.id}` +
-              '&status=eq.reserved',
-            body: {
-              status: 'expired'
-            }
-          });
-
-          expired++;
+          overdue++;
+          overduePlayers.push(r);
           continue;
         }
 
-        // Send one reminder at day 7.
-        const elapsed = now.getTime() - started;
-
+        // One parent reminder after seven days.
         if (
           !r.reminders_disabled &&
           !r.last_reminder_at &&
-          elapsed >= 7 * 86400000
+          now.getTime() - started >= 7 * 86400000
         ) {
-          const dueDate = new Date(
-            deadline
-          ).toLocaleDateString('en-US', {
-            timeZone: 'America/Chicago'
-          });
+          const dueDate = new Date(deadline)
+            .toLocaleDateString('en-US', {
+              timeZone: 'America/Chicago'
+            });
 
           await send(
             r.guardian_email,
             'Weslaco Venom — Payment reminder',
             `
               <h2>Weslaco Venom Payment Reminder</h2>
-              <p>
-                This is a reminder that the
-                reserved spot for
-                <strong>${escapeHtml(r.player_name)}</strong>
-                has not yet been marked paid.
-              </p>
-              <p>
-                Payment deadline:
-                <strong>${dueDate}</strong>
-              </p>
-              <p>
-                Please contact Weslaco Venom
-                for payment instructions.
-              </p>
-              <p>
-                You can manage your registration
-                or unsubscribe using the private
-                link in your original confirmation email.
-              </p>
+              <p>The uniform fee for
+              <strong>${escapeHtml(r.player_name)}</strong>
+              has not yet been marked paid.</p>
+              <p>Payment deadline:
+              <strong>${dueDate}</strong></p>
+              <p>Uniform fee: <strong>$50</strong></p>
+              <p>Pay by Zelle to
+              <strong>956-264-8663</strong>
+              or cash in person.</p>
+              <p>The separate $50 Texasports fee
+              is paid directly to Texasports.
+              Payment link to be announced.</p>
+              <p>You may opt out of reminders using
+              the link in your original
+              registration confirmation.</p>
             `
           );
 
           await db('venom_reservations', {
             method: 'PATCH',
             query:
-              `?id=eq.${r.id}` +
-              '&status=eq.reserved',
+              `?id=eq.${encodeURIComponent(r.id)}` +
+              '&status=eq.reserved' +
+              '&last_reminder_at=is.null',
             body: {
               last_reminder_at: now.toISOString()
             }
@@ -120,35 +97,60 @@ exports.handler = async () => {
 
           reminded++;
         }
-
       } catch (error) {
         failed++;
-
         console.error(
-          'Reservation processing failed:',
+          'Reminder processing failed:',
           r.id,
           error.message
         );
-
-        // Continue processing other reservations.
       }
     }
 
-    console.log({
-      expired,
-      reminded,
-      failed
-    });
+    // Daily admin summary of overdue registrations.
+    if (overduePlayers.length && adminEmail) {
+      try {
+        const items = overduePlayers.map(r => {
+          const due = new Date(r.expires_at)
+            .toLocaleDateString('en-US', {
+              timeZone: 'America/Chicago'
+            });
+
+          return `<li>${escapeHtml(r.player_name)}
+            — deadline ${escapeHtml(due)}</li>`;
+        }).join('');
+
+        await send(
+          adminEmail,
+          `Weslaco Venom — ${overdue} overdue payment(s)`,
+          `
+            <h2>Overdue Uniform Payments</h2>
+            <p>${overdue} registration(s) need review.</p>
+            <ul>${items}</ul>
+            <p>No registrations were automatically
+            cancelled. Review them in your
+            administrator dashboard.</p>
+          `
+        );
+      } catch (error) {
+        failed++;
+        console.error(
+          'Admin overdue email failed:',
+          error.message
+        );
+      }
+    }
+
+    console.log({ overdue, reminded, failed });
 
     return {
       statusCode: 200,
       body: JSON.stringify({
-        expired,
+        overdue,
         reminded,
         failed
       })
     };
-
   } catch (error) {
     console.error(
       'Scheduled reminder job failed:',
